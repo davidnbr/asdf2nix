@@ -5,16 +5,16 @@
     lib = rec {
       versionMap = {
         "18.16" = {
-          rev = "5e15d5da4abb74f0dd76967044735c70e94c5af1";
-          sha256 = "0mk86mlxamjxhywdfp5asylqb39z7w18dcy8ds6qvl8gqjrijmq9";
+          rev = "824421b1796332ad1bcb35bc7855da832c43305f";
+          sha256 = "1w6cjnakz1yi66rs8c6nmhymsr7bj82vs2hz200ipi1sfiq8dy4y";
         };
         "18.18" = {
-          rev = "9c513fc6fb75142f6aec6b7545cb8af2236b80f5";
-          sha256 = "1wigq25g54b74badivmb5svcis96fb6mginj0grk1s4rxmp33vbf";
+          rev = "9957cd48326fe8dbd52fdc50dd2502307f188b0d";
+          sha256 = "1l2hq1n1jl2l64fdcpq3jrfphaz10sd1cpsax3xdya0xgsncgcsi";
         };
         "18.20" = {
-          rev = "a343533bccc62400e8a9560423486a3b6c11a23b";
-          sha256 = "0103a1a1g5sp4bjhm6fl0nfw69jgdiwrwz96nnqi0f3bg6vcg1sf";
+          rev = "05bbf675397d5366259409139039af8077d695ce";
+          sha256 = "1r26vjqmzgphfnby5lkfihz6i3y70hq84bpkwd43qjjvgxkcyki0";
         };
         "20.14" = {
           rev = "a343533bccc62400e8a9560423486a3b6c11a23b";
