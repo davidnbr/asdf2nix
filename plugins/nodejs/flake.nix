@@ -83,7 +83,7 @@
       # Retrieve the nodejs package for the requested version
       packageFromVersion = { system, version }:
         let
-          inherit (builtins) match elemAt fetchGit;
+          inherit (builtins) match elemAt fetchGit tryEval;
 
           # Parse version to get major.minor
           versionMatch = match "([0-9]+)\\.([0-9]+)(\\..*)?$" version;
@@ -111,10 +111,48 @@
             rev = nixpkgsInfo.rev;
           }) { inherit system; };
 
-          # Get the nodejs package attribute name (e.g., nodejs_18)
-          nodejsAttr = "nodejs_${major}";
+          # Try multiple attribute names (naming changed over time in nixpkgs)
+          # For Node 18: try nodejs_18, then nodejs-18_x, then elmPackages.nodejs
+          # For Node 20+: try nodejs_XX
+          possibleAttrs = 
+            if major == "18" then
+              [ "nodejs_18" "nodejs-18_x" "elmPackages.nodejs" ]
+            else
+              [ "nodejs_${major}" ];
 
-        in pinnedPkgs.${nodejsAttr};
+          # Try each possible attribute name until one works
+          tryAttr = attr:
+            let
+              parts = builtins.split "\\." attr;
+              getPkg = pkgs: name:
+                if builtins.hasAttr name pkgs
+                then pkgs.${name}
+                else null;
+            in
+              if builtins.length parts == 1 then
+                getPkg pinnedPkgs attr
+              else
+                # Handle nested attributes like elmPackages.nodejs
+                let
+                  first = builtins.elemAt parts 0;
+                  rest = builtins.elemAt parts 2;
+                in
+                  if pinnedPkgs ? ${first} then
+                    getPkg pinnedPkgs.${first} rest
+                  else
+                    null;
+
+          findWorkingAttr = attrs:
+            if attrs == [] then
+              throw "Could not find nodejs attribute for version ${versionKey} in any of: ${builtins.concatStringsSep ", " possibleAttrs}"
+            else
+              let
+                result = tryAttr (builtins.head attrs);
+              in
+                if result != null then result
+                else findWorkingAttr (builtins.tail attrs);
+
+        in findWorkingAttr possibleAttrs;
     };
   };
 }
